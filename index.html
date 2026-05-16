@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VlogAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    :root{
+      --bg:#080808;
+      --s1:#111;
+      --s2:#181818;
+      --s3:#222;
+      --border:#2a2a2a;
+      --border2:#333;
+      --text:#f5f5f5;
+      --muted:#666;
+      --muted2:#3a3a3a;
+      --orange:#ff8c42;
+      --coral:#ff5fa0;
+      --grad:linear-gradient(90deg,#ff8c42,#ff5fa0);
+      --grad2:linear-gradient(135deg,#ff8c42,#ff5fa0);
+      --orange-glow:rgba(255,140,66,.12);
+      --coral-glow:rgba(255,95,160,.1);
+      --r:10px;
+      --rl:16px;
+      --rxl:22px;
+    }
+
+    html{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;-webkit-font-smoothing:antialiased}
+    body{min-height:100vh;overflow-x:hidden}
+
+    body::before{content:'';position:fixed;inset:0;background:
+      radial-gradient(ellipse 60% 40% at 10% 20%,rgba(255,140,66,.06),transparent),
+      radial-gradient(ellipse 50% 40% at 90% 80%,rgba(255,95,160,.07),transparent);
+      pointer-events:none;z-index:0}
+
+    header{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+
+    .logo{font-family:'Space Mono',monospace;font-weight:700;font-size:17px;display:flex;align-items:center;gap:10px}
+    .logo-icon{width:30px;height:30px;background:var(--grad2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .logo-icon svg{width:15px;height:15px}
+    .logo-name{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+    .nav-badge{font-size:10px;font-weight:700;padding:4px 12px;border-radius:99px;background:var(--s2);color:var(--muted);border:1px solid var(--border2);letter-spacing:.08em;text-transform:uppercase}
+
+    main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:3rem 2rem 6rem}
+
+    .hero{margin-bottom:3rem}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:.12em;margin-bottom:1.1rem;padding:7px 16px;border:1px solid rgba(255,107,53,.25);border-radius:99px;background-clip:text;position:relative}
+    .hero-eyebrow::before{content:'';position:absolute;inset:0;border-radius:99px;background:linear-gradient(90deg,rgba(255,107,53,.08),rgba(255,61,110,.08));z-index:-1}
+    .eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--grad2);animation:pulse 2s infinite;flex-shrink:0}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+    .hero h1{font-size:clamp(2.4rem,5.5vw,4rem);font-weight:700;line-height:1.02;letter-spacing:-2px;margin-bottom:1.25rem}
+    .hero h1 .grad-text{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block}
+    .hero-sub{font-size:16px;color:var(--muted);line-height:1.65;max-width:480px}
+
+    .hero-stats{display:flex;gap:2rem;margin-top:2rem;flex-wrap:wrap}
+    .stat{display:flex;flex-direction:column;gap:3px}
+    .stat-num{font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+    .stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+    .form-wrap{background:var(--s1);border:1px solid var(--border);border-radius:var(--rxl);padding:2rem;display:flex;flex-direction:column;gap:1.5rem;position:relative;overflow:hidden}
+    .form-wrap::after{content:'';position:absolute;bottom:-80px;right:-80px;width:220px;height:220px;background:radial-gradient(circle,rgba(255,61,110,.06),transparent 70%);pointer-events:none}
+    .form-wrap::before{content:'';position:absolute;top:-80px;left:-80px;width:220px;height:220px;background:radial-gradient(circle,rgba(255,107,53,.06),transparent 70%);pointer-events:none}
+
+    .flabel{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+
+    .fg{display:flex;flex-direction:column;gap:7px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+
+    textarea,input[type=text]{background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;padding:12px 14px;outline:none;width:100%;transition:border-color .15s,box-shadow .15s}
+    textarea{min-height:110px;resize:vertical}
+    textarea:focus,input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,53,.1)}
+    textarea::placeholder,input::placeholder{color:var(--muted2)}
+
+    .chips{display:flex;flex-wrap:wrap;gap:7px}
+    .chip{padding:7px 16px;border-radius:99px;border:1px solid var(--border2);background:var(--s2);color:var(--muted);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;user-select:none}
+    .chip:hover{border-color:var(--orange);color:var(--orange)}
+    .chip.on{background:var(--grad2);border-color:transparent;color:#fff;font-weight:700}
+
+    .divider{height:1px;background:var(--border)}
+
+    .gbtn{width:100%;padding:17px;background:var(--grad2);border:none;border-radius:var(--r);color:#fff;font-family:'Space Mono',monospace;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-.2px;text-transform:uppercase;transition:opacity .12s,transform .1s,box-shadow .15s}
+    .gbtn:hover{opacity:.9;box-shadow:0 8px 30px rgba(255,107,53,.3)}
+    .gbtn:active{transform:scale(.99)}
+    .gbtn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+
+    .loading{display:flex;align-items:center;gap:14px;font-size:14px;color:var(--muted);padding:2.5rem 0;font-family:'Space Mono',monospace}
+    .dots{display:flex;gap:6px}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:bk 1.2s infinite}
+    .dot:nth-child(2){animation-delay:.2s;background:var(--coral)}.dot:nth-child(3){animation-delay:.4s}
+    @keyframes bk{0%,80%,100%{transform:translateY(0);opacity:.3}40%{transform:translateY(-8px);opacity:1}}
+
+    .result{margin-top:2.5rem;border-radius:var(--rxl);overflow:hidden;border:1px solid var(--border)}
+
+    .result-header{padding:1.25rem 1.75rem;background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .result-header h2{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:.08em}
+    .result-pills{display:flex;gap:6px}
+    .rpill{padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600;background:var(--s2);border:1px solid var(--border2);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+    .rpill.hot{background:linear-gradient(90deg,rgba(255,107,53,.15),rgba(255,61,110,.15));border-color:rgba(255,107,53,.3);color:var(--orange)}
+
+    .r-intro{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border);background:var(--s1)}
+    .intro-text{font-size:15px;color:var(--muted);font-style:italic;line-height:1.65;padding:14px 18px;border-left:3px solid var(--orange);background:rgba(255,107,53,.05);border-radius:0 var(--r) var(--r) 0}
+    .recadrage{margin-top:10px;padding:10px 14px;background:rgba(255,196,0,.05);border:1px solid rgba(255,196,0,.2);border-radius:var(--r);font-size:13px;color:#e0b800;line-height:1.5}
+
+    .r-grid{display:grid;grid-template-columns:1fr 1fr;background:var(--s1)}
+    .r-col{padding:1.5rem 1.75rem}
+    .r-col+.r-col{border-left:1px solid var(--border)}
+    .r-full{padding:1.25rem 1.75rem;border-top:1px solid var(--border);background:var(--s1)}
+    .r-split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+
+    .sec{font-size:10px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,107,53,.3),transparent)}
+
+    .scene{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+    .scene:last-child{border-bottom:none}
+    .sn{min-width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,rgba(255,107,53,.15),rgba(255,61,110,.15));color:var(--orange);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace}
+    .sc{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+    .sk{font-size:12px;color:var(--muted);line-height:1.5}
+    .sd{font-size:11px;color:var(--orange);margin-top:4px;font-weight:700;font-family:'Space Mono',monospace}
+
+    .cg-card{padding:12px 14px;background:var(--s2);border-radius:var(--r);border:1px solid var(--border2);margin-bottom:8px}
+    .cg-card:last-child{margin-bottom:0}
+    .cg-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .cg-name{font-size:13px;font-weight:700;color:var(--text)}
+    .cg-free{font-size:10px;padding:2px 8px;border-radius:99px;background:rgba(0,220,100,.08);color:#00dc64;font-weight:700;letter-spacing:.04em;border:1px solid rgba(0,220,100,.15)}
+    .cg-detail{font-size:12px;color:var(--muted);line-height:1.65}
+
+    .info{font-size:13px;color:var(--muted);line-height:1.65}
+
+    .tags{display:flex;flex-wrap:wrap;gap:6px}
+    .tag{padding:5px 13px;border-radius:99px;font-size:12px;font-weight:600;background:linear-gradient(90deg,rgba(255,107,53,.1),rgba(255,61,110,.1));color:var(--orange);border:1px solid rgba(255,107,53,.2)}
+
+    .tlines{display:flex;flex-direction:column;gap:6px}
+    .tline{font-size:13px;color:var(--muted);padding:9px 13px 9px 28px;background:var(--s2);border-radius:8px;border:1px solid var(--border);position:relative}
+    .tline::before{content:'→';position:absolute;left:10px;color:var(--coral);font-weight:700}
+
+    .err{padding:14px 18px;background:rgba(255,60,60,.07);border:1px solid rgba(255,60,60,.2);border-radius:var(--r);font-size:13px;color:#ff6b6b;line-height:1.6;margin-top:1rem}
+
+    footer{position:relative;z-index:1;text-align:center;padding:2rem;font-size:11px;color:var(--muted);border-top:1px solid var(--border);font-family:'Space Mono',monospace;letter-spacing:.06em}
+
+    @media(max-width:660px){
+      .row2,.r-grid,.r-split{grid-template-columns:1fr}
+      .r-col+.r-col{border-left:none;border-top:1px solid var(--border)}
+      main{padding:2rem 1.25rem 4rem}
+      .hero h1{font-size:2.4rem;letter-spacing:-1.5px}
+      .hero-stats{gap:1.25rem}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 15 15" fill="none"><path d="M7.5 1L14 13H1L7.5 1z" fill="white" fill-opacity=".9"/></svg>
+    </div>
+    <span class="logo-name">VlogAI</span>
+  </div>
+  <div class="nav-badge">Bêta gratuite</div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Générateur de montage IA</div>
+    <h1>
+      Rentre de voyage.<br>
+      <span class="grad-text">Poste le lendemain.</span>
+    </h1>
+    <p class="hero-sub">Tu as les clips, on s'occupe du reste — plan de montage, color grading, transitions et hashtags générés en secondes.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">100%</span><span class="stat-lbl">Gratuit</span></div>
+      <div class="stat"><span class="stat-num">&lt;30s</span><span class="stat-lbl">Généré en</span></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-lbl">Outils color grading</span></div>
+    </div>
+  </div>
+
+  <div class="form-wrap">
+    <div class="fg">
+      <div class="flabel">Décris tes clips</div>
+      <textarea id="clips" placeholder="Ex : clips du marché, coucher de soleil, plage, dîner au resto, balade en scooter, chambre d'hôtel... Voyage à Bali, 5 jours."></textarea>
+    </div>
+
+    <div class="row2">
+      <div class="fg">
+        <div class="flabel">Format des clips</div>
+        <div class="chips" id="fmt">
+          <button type="button" class="chip on" data-v="16:9">16:9</button>
+          <button type="button" class="chip" data-v="9:16">9:16</button>
+          <button type="button" class="chip" data-v="1:1">1:1</button>
+          <button type="button" class="chip" data-v="4:3">4:3</button>
+        </div>
+      </div>
+      <div class="fg">
+        <div class="flabel">Plateforme</div>
+        <div class="chips" id="plt">
+          <button type="button" class="chip on" data-v="TikTok">TikTok</button>
+          <button type="button" class="chip" data-v="Reels">Reels</button>
+          <button type="button" class="chip" data-v="YouTube">YouTube</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="fg">
+        <div class="flabel">Ambiance</div>
+        <div class="chips" id="vib">
+          <button type="button" class="chip on" data-v="dynamique">Dynamique</button>
+          <button type="button" class="chip" data-v="chill">Chill</button>
+          <button type="button" class="chip" data-v="cinématique">Cinématique</button>
+          <button type="button" class="chip" data-v="feel-good">Feel-good</button>
+        </div>
+      </div>
+      <div class="fg">
+        <div class="flabel">Lien musique (YouTube / Spotify)</div>
+        <input type="text" id="music" placeholder="https://..."/>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <button type="button" class="gbtn" id="gbtn">⚡ Générer mon plan de montage</button>
+  </div>
+
+  <div id="out"></div>
+</main>
+
+<footer>VLOGAI · 100% GRATUIT</footer>
+
+<script>
+  ['fmt','plt','vib'].forEach(function(gid){
+    var grp=document.getElementById(gid);
+    var chips=grp.querySelectorAll('.chip');
+    chips.forEach(function(chip){
+      chip.addEventListener('click',function(){
+        chips.forEach(function(c){c.classList.remove('on')});
+        chip.classList.add('on');
+      });
+    });
+  });
+
+  function val(gid){
+    var el=document.querySelector('#'+gid+' .chip.on');
+    return el?el.getAttribute('data-v'):'';
+  }
+
+  document.getElementById('gbtn').addEventListener('click',function(){
+    var clips=document.getElementById('clips').value.trim();
+    if(!clips){alert('Décris tes clips pour commencer !');return;}
+
+    var fmt=val('fmt');
+    var plt=val('plt');
+    var vib=val('vib');
+    var music=document.getElementById('music').value.trim();
+    var out=document.getElementById('out');
+    var btn=document.getElementById('gbtn');
+
+    btn.disabled=true;
+    out.innerHTML='<div class="loading"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><span>Génération en cours...</span></div>';
+
+    var musicLine=music?'Musique choisie : '+music:'Pas de musique, suggère 2-3 titres populaires adaptés.';
+
+    var prompt='Tu es un expert en montage vidéo pour réseaux sociaux, spécialisé vlogs voyage.\n\nInformations :\n- Clips : '+clips+'\n- Format clips : '+fmt+'\n- Plateforme : '+plt+'\n- Ambiance : '+vib+'\n- Musique : '+musicLine+'\n\nRÈGLE RECADRAGE : TikTok accepte nativement le 16:9 (mode paysage), donc format 16:9 + TikTok = recadrage null. Signale un recadrage uniquement si vraiment incompatible (ex: 16:9 sur Reels).\n\nPour le color grading : 3 outils gratuits parmi CapCut, DaVinci Resolve, VN, InShot. Réglages chiffrés précis pour chacun.\n\nRéponds UNIQUEMENT en JSON valide sans markdown :\n{"intro":"phrase accroche","recadrage":"conseil si incompatible sinon null","scenes":[{"num":1,"clip":"nom clip","duree":"Xs","conseil":"conseil précis"}],"transitions":"transitions recommandées","colorGrading":[{"outil":"nom","preset":"nom ou null","reglages":"réglages chiffrés précis"}],"textes":["texte1","texte2","texte3"],"hashtags":["h1","h2","h3","h4","h5","h6","h7","h8"],"musique":"conseils sync"}';
+
+    fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2048,
+        messages:[{role:'user',content:prompt}]
+      })
+    })
+    .then(function(r){
+      if(!r.ok)return r.json().then(function(e){throw new Error(e.error?e.error.message:'Erreur '+r.status)});
+      return r.json();
+    })
+    .then(function(data){
+      var raw=data.content.map(function(i){return i.text||''}).join('');
+      var clean=raw.replace(/```json|```/g,'').trim();
+      var j=JSON.parse(clean);
+      render(j,plt,fmt);
+    })
+    .catch(function(e){
+      out.innerHTML='<div class="err">Erreur : '+e.message+'</div>';
+    })
+    .finally(function(){btn.disabled=false});
+  });
+
+  function render(d,plt,fmt){
+    var scenes=(d.scenes||[]).map(function(s){
+      return '<div class="scene"><div class="sn">'+s.num+'</div><div><div class="sc">'+s.clip+'</div><div class="sk">'+s.conseil+'</div><div class="sd">'+s.duree+'</div></div></div>';
+    }).join('');
+
+    var cgHtml='';
+    if(Array.isArray(d.colorGrading)){
+      cgHtml=d.colorGrading.map(function(cg){
+        var preset=cg.preset&&cg.preset!=='null'?'<strong style="color:var(--text)">Preset :</strong> '+cg.preset+'<br>':'';
+        return '<div class="cg-card"><div class="cg-head"><span class="cg-name">'+cg.outil+'</span><span class="cg-free">GRATUIT</span></div><div class="cg-detail">'+preset+cg.reglages+'</div></div>';
+      }).join('');
+    }else{
+      cgHtml='<div class="info">'+(d.colorGrading||'')+'</div>';
+    }
+
+    var tags=(d.hashtags||[]).map(function(h){
+      return '<span class="tag">#'+h.replace(/#/g,'')+'</span>';
+    }).join('');
+
+    var txts=(d.textes||[]).map(function(t){
+      return '<div class="tline">'+t+'</div>';
+    }).join('');
+
+    var rec=(d.recadrage&&d.recadrage!=='null'&&d.recadrage!==null)
+      ?'<div class="recadrage">⚠️ '+d.recadrage+'</div>':'';
+
+    document.getElementById('out').innerHTML=
+      '<div class="result">'
+      +'<div class="result-header"><h2>// Plan de montage</h2><div class="result-pills"><span class="rpill hot">'+plt+'</span><span class="rpill">'+fmt+'</span></div></div>'
+      +'<div class="r-intro"><div class="intro-text">'+(d.intro||'')+'</div>'+rec+'</div>'
+      +'<div class="r-grid">'
+        +'<div class="r-col"><div class="sec">Scènes</div>'+scenes+'</div>'
+        +'<div class="r-col"><div class="sec">Color grading</div>'+cgHtml
+          +'<div class="sec" style="margin-top:1.5rem">Transitions</div><div class="info">'+(d.transitions||'')+'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div class="r-full"><div class="sec">Musique & sync</div><div class="info" style="margin-top:4px">'+(d.musique||'')+'</div></div>'
+      +'<div class="r-full"><div class="r-split">'
+        +'<div><div class="sec">Textes & sous-titres</div><div class="tlines" style="margin-top:4px">'+txts+'</div></div>'
+        +'<div><div class="sec">Hashtags</div><div class="tags" style="margin-top:4px">'+tags+'</div></div>'
+      +'</div></div>'
+      +'</div>';
+  }
+</script>
+</body>
+</html>
